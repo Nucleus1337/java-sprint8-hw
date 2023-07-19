@@ -7,6 +7,10 @@ public class Managers {
         return new InMemoryTaskManager();
     }
 
+    public static TaskManager getDefault(String fileName) {
+        return new FileBackedTasksManager(fileName);
+    }
+
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
