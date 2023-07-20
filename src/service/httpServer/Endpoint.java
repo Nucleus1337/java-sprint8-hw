@@ -12,7 +12,7 @@ public enum Endpoint {
     GET_EPIC_BY_ID,
     POST_UPDATE_EPIC,
     POST_ADD_EPIC,
-    DELETE_EPIC,
+    DELETE_EPICS,
     DELETE_EPIC_BY_ID,
 
     GET_SUBTASKS,
@@ -22,7 +22,7 @@ public enum Endpoint {
     DELETE_SUBTASKS,
     DELETE_SUBTASK_BY_ID,
 
-    GET_EPIC_BY_SUBTASK_ID,
+    GET_ALL_SUBTASKS_BY_EPIC_ID,
     GET_HISTORY,
     GET_PRIOR_TASKS,
 
