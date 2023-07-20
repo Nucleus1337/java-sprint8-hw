@@ -119,7 +119,7 @@ public class TasksHandler implements HttpHandler {
         final String subtask = "subtask";
         final String history = "history";
         String[] pathArray = path.split("/");
-        String[] pathParams = query.isEmpty() ? null : query.split("&");
+        String[] pathParams = query == null ? null : query.split("&");
         String taskType = "";
 
         if (pathArray.length > 2) {
