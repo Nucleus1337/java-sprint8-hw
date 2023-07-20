@@ -1,15 +1,21 @@
 package service.httpClient;
 
-import service.httpServer.KVServer;
-
-import java.net.URI;
+import java.net.http.HttpClient;
 
 public class KVTaskClient {
-    private URI uri;
+    private final int port = 8087;
+    private final String host = "localhost";
+    private long token;
 
-    public KVTaskClient(URI uri) {
-        this.uri = uri;
+    public void save() {
 
+    }
+
+    public void load() {
+
+    }
+
+    private void getToken() {
 
     }
 }
