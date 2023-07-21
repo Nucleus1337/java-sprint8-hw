@@ -196,7 +196,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static void addHistory(FileBackedTasksManager tasksManager, List<Integer> history) {
+    protected static void addHistory(FileBackedTasksManager tasksManager, List<Integer> history) {
         for (Integer taskId : history) {
             Task task = findTask(tasksManager, taskId);
             tasksManager.getHistoryManager().add(task);
@@ -212,7 +212,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static Task findTask(FileBackedTasksManager tasksManager, long taskId) {
+    protected static Task findTask(FileBackedTasksManager tasksManager, long taskId) {
         final Epic epic = tasksManager.getEpicIdToEpic().get(taskId);
         if (epic != null) return epic;
 
@@ -280,7 +280,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static String historyToString(HistoryManager manager) {
+    protected static String historyToString(HistoryManager manager) {
         StringBuilder builder = new StringBuilder();
         for (Task taskHistory : manager.getHistory()) {
             builder.append(taskHistory.getId()).append(",");
@@ -289,7 +289,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return builder.toString();
     }
 
-    private static List<Integer> historyFromString(String value) {
+    protected static List<Integer> historyFromString(String value) {
         List<Integer> history = new LinkedList<>();
         String[] elements = value.split(",");
 

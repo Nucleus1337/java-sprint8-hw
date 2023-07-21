@@ -1,26 +1,29 @@
 package service.httpServer;
 
 import com.sun.net.httpserver.HttpServer;
+import model.Task;
+import service.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import static service.HttpTaskManager.loadFromServer;
+
 public class HttpTaskServer {
     private final static int DEFAULT_PORT = 8080;
+    private HttpServer httpServer;
 
-    public static void main(String[] args) {
-        try {
-            HttpServer httpServer = HttpServer.create();
-            httpServer.bind(new InetSocketAddress(DEFAULT_PORT), 0);
-            httpServer.createContext("/tasks", new TasksHandler());
+    public void start() throws IOException {
+        httpServer = HttpServer.create();
+        httpServer.bind(new InetSocketAddress(DEFAULT_PORT), 0);
+        httpServer.createContext("/tasks", new TasksHandler());
 
-            httpServer.start();
+        httpServer.start();
 
-            System.out.println("HTTP-сервер запущен на " + DEFAULT_PORT + " порту!");
-//            new KVServer().start();
+        System.out.println("HTTP-сервер запущен на " + DEFAULT_PORT + " порту!");
+    }
 
-        } catch (IOException e) {
-            System.out.println("Возникли проблемы в работе: " + e.getMessage());
-        }
+    public void stop() {
+        httpServer.stop(0);
     }
 }

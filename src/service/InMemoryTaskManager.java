@@ -268,7 +268,7 @@ public class InMemoryTaskManager implements TaskManager {
         return new LinkedList<>(prioritizedTasks);
     }
 
-    public void checkIntersection(Task task) {
+    public void checkIntersection(Task task) throws IllegalStateException {
         boolean isIntersection = getPrioritizedTasks().stream().anyMatch(t -> t.getStartTime() != null
                 && t.getId() != task.getId()
                 && (task.getStartTime().isAfter(t.getStartTime()) && task.getStartTime().isBefore(t.getEndTime())

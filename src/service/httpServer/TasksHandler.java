@@ -19,21 +19,14 @@ import java.time.LocalDateTime;
 import static service.httpServer.Endpoint.*;
 
 public class TasksHandler implements HttpHandler {
-    private static final Gson gson;
+    private static Gson gson;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    private static final TaskManager manager = Managers.getDefault("fileToSave.csv");
+    public static final TaskManager manager = Managers.getDefault("http://localhost", 8080);
 
-    static {
+    public TasksHandler() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
         gson = gsonBuilder.create();
-
-        manager.createTask(new Task("Task1", "TaskDesc1", "2022-01-01-10-24", 3)); /*1*/
-        manager.createTask(new Task("Task2", "TaskDesc2", "2022-01-01-10-46", 15)); /*2*/
-
-        manager.createEpic(new Epic("Epic1", "Epic1 desc")); /*3*/
-        manager.createSubtask(new Subtask("Subtask1 Epic1", "Subtask1 Epic1 desc", 3,
-                "2022-01-01-12-46", 15)); /*4*/
     }
 
     @Override
