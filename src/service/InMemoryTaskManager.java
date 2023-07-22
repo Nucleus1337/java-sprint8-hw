@@ -153,11 +153,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeEpicById(long epicId) {
-        epicIdToEpic.get(epicId).getSubtaskId().forEach(subtaskId -> {
-            prioritizedTasks.remove(subtaskIdToSubtask.get(subtaskId));
-            subtaskIdToSubtask.remove(subtaskId);
-            historyManager.remove(subtaskId);
-        });
+        List<Long> subtasksId = epicIdToEpic.get(epicId).getSubtaskId();
+        if (subtasksId != null) {
+            subtasksId.forEach(subtaskId -> {
+                prioritizedTasks.remove(subtaskIdToSubtask.get(subtaskId));
+                subtaskIdToSubtask.remove(subtaskId);
+                historyManager.remove(subtaskId);
+            });
+        }
 
         epicIdToEpic.remove(epicId);
         historyManager.remove(epicId);

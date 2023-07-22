@@ -22,8 +22,9 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static util.Sequence.setStartId;
 
-public class HttpTaskManagerTest /*extends TaskManagerTest<HttpTaskManager>*/ {
+public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     private final String task1Json = "{\n" +
                                         "  \"name\":\"Task1\",\n" +
                                         "  \"description\":\"Desc1\",\n" +
@@ -63,6 +64,8 @@ public class HttpTaskManagerTest /*extends TaskManagerTest<HttpTaskManager>*/ {
 
     @BeforeEach
     void setUp() throws IOException {
+        manager = new HttpTaskManager("http://localhost", 8087);
+
         System.out.println("setUp begin");
         System.out.println("KVServer");
         kvServer = new KVServer();
@@ -72,6 +75,8 @@ public class HttpTaskManagerTest /*extends TaskManagerTest<HttpTaskManager>*/ {
         taskServer = new HttpTaskServer();
         taskServer.start();
         System.out.println("setUp end");
+
+        setStartId(1);
     }
 
     @AfterEach
@@ -264,5 +269,236 @@ public class HttpTaskManagerTest /*extends TaskManagerTest<HttpTaskManager>*/ {
         JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
 
         assertEquals(2, jsonArray.size());
+    }
+
+    @Test
+    void deleteAllTasks() throws IOException, InterruptedException {
+        final URI urlToCreate = URI.create("http://localhost:8080/tasks/task/");
+
+        final HttpRequest.BodyPublisher body1 = HttpRequest.BodyPublishers.ofString(task1Json);
+        final HttpRequest.BodyPublisher body2 = HttpRequest.BodyPublishers.ofString(task2Json);
+
+        HttpRequest request1 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body1)
+                .build();
+        HttpRequest request2 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body2)
+                .build();
+
+        HttpResponse<String> responseOnPost1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseOnPost2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnPost1.statusCode());
+        assertEquals("Задача создана успешно", responseOnPost1.body());
+        assertEquals(200, responseOnPost2.statusCode());
+        assertEquals("Задача создана успешно", responseOnPost2.body());
+
+        final URI urlToGet = URI.create("http://localhost:8080/tasks/task/");
+
+        final HttpRequest requestToDelete = HttpRequest.newBuilder()
+                .uri(urlToGet)
+                .DELETE()
+                .build();
+        HttpResponse<String> responseOnDelete = client.send(requestToDelete, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnDelete.statusCode());
+
+        final HttpRequest requestToGet = HttpRequest.newBuilder()
+                .uri(urlToGet)
+                .GET()
+                .build();
+        HttpResponse<String> responseOnGet = client.send(requestToGet, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnGet.statusCode());
+
+        String response = responseOnGet.body();
+        JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
+
+        assertEquals(0, jsonArray.size());
+    }
+
+    @Test
+    void deleteAllEpics() throws IOException, InterruptedException {
+        final URI urlToCreate = URI.create("http://localhost:8080/tasks/epic/");
+
+        final HttpRequest.BodyPublisher body1 = HttpRequest.BodyPublishers.ofString(epic1Json);
+        final HttpRequest.BodyPublisher body2 = HttpRequest.BodyPublishers.ofString(epic2Json);
+
+        HttpRequest request1 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body1)
+                .build();
+        HttpRequest request2 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body2)
+                .build();
+
+        HttpResponse<String> responseOnPost1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseOnPost2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnPost1.statusCode());
+        assertEquals("Эпик создан успешно", responseOnPost1.body());
+        assertEquals(200, responseOnPost2.statusCode());
+        assertEquals("Эпик создан успешно", responseOnPost2.body());
+
+        final URI urlToGet = URI.create("http://localhost:8080/tasks/epic/");
+
+        final HttpRequest requestToDelete = HttpRequest.newBuilder()
+                .uri(urlToGet)
+                .DELETE()
+                .build();
+        HttpResponse<String> responseOnDelete = client.send(requestToDelete, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnDelete.statusCode());
+
+        final HttpRequest requestToGet = HttpRequest.newBuilder()
+                .uri(urlToGet)
+                .GET()
+                .build();
+        HttpResponse<String> responseOnGet = client.send(requestToGet, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnGet.statusCode());
+
+        String response = responseOnGet.body();
+        JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
+
+        assertEquals(0, jsonArray.size());
+    }
+
+    @Test
+    void getHistoryFromServer() throws IOException, InterruptedException {
+        final URI urlToCreate = URI.create("http://localhost:8080/tasks/task/");
+
+        final HttpRequest.BodyPublisher body1 = HttpRequest.BodyPublishers.ofString(task1Json);
+        final HttpRequest.BodyPublisher body2 = HttpRequest.BodyPublishers.ofString(task2Json);
+
+        HttpRequest request1 = HttpRequest.newBuilder().uri(urlToCreate).POST(body1).build();
+        HttpRequest request2 = HttpRequest.newBuilder().uri(urlToCreate).POST(body2).build();
+
+        HttpResponse<String> responseOnPost1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseOnPost2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnPost1.statusCode());
+        assertEquals("Задача создана успешно", responseOnPost1.body());
+        assertEquals(200, responseOnPost2.statusCode());
+        assertEquals("Задача создана успешно", responseOnPost2.body());
+
+        final HttpRequest requestToGet1 = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/task/?id=1"))
+                .GET()
+                .build();
+        HttpResponse<String> response1 = client.send(requestToGet1, HttpResponse.BodyHandlers.ofString());
+
+        final HttpRequest requestToGet2 = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/task/?id=2"))
+                .GET()
+                .build();
+        HttpResponse<String> response2 = client.send(requestToGet2, HttpResponse.BodyHandlers.ofString());
+
+
+        final URI urlToGet = URI.create("http://localhost:8080/tasks/history/");
+
+        final HttpRequest requestToGet = HttpRequest.newBuilder().uri(urlToGet).GET().build();
+        HttpResponse<String> responseOnGet = client.send(requestToGet, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnGet.statusCode());
+
+        String response = responseOnGet.body();
+        JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
+
+        assertEquals(2, jsonArray.size());
+    }
+
+    @Test
+    void deleteTaskById() throws IOException, InterruptedException {
+        final URI urlToCreate = URI.create("http://localhost:8080/tasks/task/");
+
+        final HttpRequest.BodyPublisher body1 = HttpRequest.BodyPublishers.ofString(task1Json);
+        final HttpRequest.BodyPublisher body2 = HttpRequest.BodyPublishers.ofString(task2Json);
+
+        HttpRequest request1 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body1)
+                .build();
+        HttpRequest request2 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body2)
+                .build();
+
+        HttpResponse<String> responseOnPost1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseOnPost2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnPost1.statusCode());
+        assertEquals("Задача создана успешно", responseOnPost1.body());
+        assertEquals(200, responseOnPost2.statusCode());
+        assertEquals("Задача создана успешно", responseOnPost2.body());
+
+        final URI urlToGet = URI.create("http://localhost:8080/tasks/task/?id=1");
+
+        final HttpRequest requestToDelete = HttpRequest.newBuilder()
+                .uri(urlToGet)
+                .DELETE()
+                .build();
+        HttpResponse<String> responseOnDelete = client.send(requestToDelete, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnDelete.statusCode());
+
+        final HttpRequest requestToGet = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/task/?id=2"))
+                .GET()
+                .build();
+        HttpResponse<String> responseOnGet = client.send(requestToGet, HttpResponse.BodyHandlers.ofString());
+
+        Task task = gson.fromJson(responseOnGet.body(), Task.class);
+        assertEquals(200, responseOnGet.statusCode());
+        assertEquals(2, task.getId());
+    }
+
+    @Test
+    void deleteEpicById() throws IOException, InterruptedException {
+        final URI urlToCreate = URI.create("http://localhost:8080/tasks/epic/");
+
+        final HttpRequest.BodyPublisher body1 = HttpRequest.BodyPublishers.ofString(epic1Json);
+        final HttpRequest.BodyPublisher body2 = HttpRequest.BodyPublishers.ofString(epic2Json);
+
+        HttpRequest request1 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body1)
+                .build();
+        HttpRequest request2 = HttpRequest.newBuilder()
+                .uri(urlToCreate)
+                .POST(body2)
+                .build();
+
+        HttpResponse<String> responseOnPost1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> responseOnPost2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnPost1.statusCode());
+        assertEquals("Эпик создан успешно", responseOnPost1.body());
+        assertEquals(200, responseOnPost2.statusCode());
+        assertEquals("Эпик создан успешно", responseOnPost2.body());
+
+        final URI urlToGet = URI.create("http://localhost:8080/tasks/epic/?id=1");
+
+        final HttpRequest requestToDelete = HttpRequest.newBuilder()
+                .uri(urlToGet)
+                .DELETE()
+                .build();
+        HttpResponse<String> responseOnDelete = client.send(requestToDelete, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, responseOnDelete.statusCode());
+
+        final HttpRequest requestToGet = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/tasks/epic/?id=2"))
+                .GET()
+                .build();
+        HttpResponse<String> responseOnGet = client.send(requestToGet, HttpResponse.BodyHandlers.ofString());
+
+        Epic epic = gson.fromJson(responseOnGet.body(), Epic.class);
+
+        assertEquals(200, responseOnGet.statusCode());
+        assertEquals(2, epic.getId());
     }
 }
