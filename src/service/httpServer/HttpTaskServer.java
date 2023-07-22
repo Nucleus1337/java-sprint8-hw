@@ -7,13 +7,14 @@ import service.TaskManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import static service.HttpTaskManager.loadFromServer;
+//import static service.HttpTaskManager.loadFromServer;
 
 public class HttpTaskServer {
-    private final static int DEFAULT_PORT = 8080;
     private HttpServer httpServer;
 
     public void start() throws IOException {
+        int DEFAULT_PORT = 8080;
+
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(DEFAULT_PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());

@@ -21,11 +21,10 @@ import static service.httpServer.Endpoint.*;
 public class TasksHandler implements HttpHandler {
     private static Gson gson;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    public static final TaskManager manager = Managers.getDefault("http://localhost", 8080);
+    public final TaskManager manager = Managers.getDefault("http://localhost", 8080);
 
     public TasksHandler() {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.serializeNulls();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
         gson = gsonBuilder.create();
     }
@@ -197,7 +196,7 @@ public class TasksHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes());
         Epic epic = gson.fromJson(body, Epic.class);
 
-        manager.createTask(epic);
+        manager.createEpic(epic);
         writeResponse(exchange, "Эпик создан успешно", 200);
     }
 
@@ -205,7 +204,7 @@ public class TasksHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes());
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
-        manager.createTask(subtask);
+        manager.createSubtask(subtask);
         writeResponse(exchange, "Подзадача создана успешно", 200);
     }
 
@@ -245,7 +244,7 @@ public class TasksHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes());
         Epic epic = gson.fromJson(body, Epic.class);
 
-        manager.updateTask(epic);
+        manager.updateEpic(epic);
         writeResponse(exchange, "Задача успешно обновленна", 200);
     }
 
@@ -253,7 +252,7 @@ public class TasksHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes());
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
-        manager.updateTask(subtask);
+        manager.updateSubtask(subtask);
         writeResponse(exchange, "Задача успешно обновленна", 200);
     }
 
