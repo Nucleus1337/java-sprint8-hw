@@ -1,16 +1,19 @@
 package service;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import service.httpClient.KVTaskClient;
-import service.httpServer.LocalDateTimeAdapter;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static util.Managers.getGsonWithLocalDateTimeAdapter;
 
 public class HttpTaskManager extends FileBackedTasksManager{
     private final static String[] kvServerTypes = {"task", "epic", "subtask", "history", "prioritized"};
@@ -21,9 +24,7 @@ public class HttpTaskManager extends FileBackedTasksManager{
         super(null);
         kvTaskClient = new KVTaskClient(host);
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-        gson = gsonBuilder.create();
+        gson = getGsonWithLocalDateTimeAdapter();
     }
 
     @Override
@@ -66,6 +67,7 @@ public class HttpTaskManager extends FileBackedTasksManager{
                     addPrioritized(manager, jsonArray);
             }
         }
+
         return manager;
     }
 

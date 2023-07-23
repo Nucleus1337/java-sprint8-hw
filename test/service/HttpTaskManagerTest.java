@@ -1,7 +1,6 @@
 package service;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import model.Epic;
@@ -12,16 +11,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.httpServer.HttpTaskServer;
 import service.httpServer.KVServer;
-import service.httpServer.LocalDateTimeAdapter;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static util.Managers.getGsonWithLocalDateTimeAdapter;
 import static util.Sequence.setStartId;
 
 public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
@@ -53,9 +51,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     @BeforeAll
     static void beforeAll() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-        gson = gsonBuilder.create();
+        gson = getGsonWithLocalDateTimeAdapter();
 
         client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)

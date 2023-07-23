@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static service.httpServer.Endpoint.*;
+import static util.Managers.getGsonWithLocalDateTimeAdapter;
 
 public class TasksHandler implements HttpHandler {
     private static Gson gson;
@@ -24,9 +25,7 @@ public class TasksHandler implements HttpHandler {
     public final TaskManager manager = Managers.getDefault("http://localhost", 8080);
 
     public TasksHandler() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-        gson = gsonBuilder.create();
+        gson = getGsonWithLocalDateTimeAdapter();
     }
 
     @Override
@@ -185,7 +184,7 @@ public class TasksHandler implements HttpHandler {
     }
 
     private void createTask(HttpExchange exchange) throws IOException {
-        String body = new String(exchange.getRequestBody().readAllBytes());
+        String body = readText(exchange);
         Task task = gson.fromJson(body, Task.class);
 
         manager.createTask(task);
@@ -193,7 +192,7 @@ public class TasksHandler implements HttpHandler {
     }
 
     private void createEpic(HttpExchange exchange) throws IOException {
-        String body = new String(exchange.getRequestBody().readAllBytes());
+        String body = readText(exchange);
         Epic epic = gson.fromJson(body, Epic.class);
 
         manager.createEpic(epic);
@@ -201,7 +200,7 @@ public class TasksHandler implements HttpHandler {
     }
 
     private void createSubtask(HttpExchange exchange) throws IOException {
-        String body = new String(exchange.getRequestBody().readAllBytes());
+        String body = readText(exchange);
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
         manager.createSubtask(subtask);
@@ -233,7 +232,7 @@ public class TasksHandler implements HttpHandler {
     }
 
     private void updateTask(HttpExchange exchange) throws IOException {
-        String body = new String(exchange.getRequestBody().readAllBytes());
+        String body = readText(exchange);
         Task task = gson.fromJson(body, Task.class);
 
         manager.updateTask(task);
@@ -241,7 +240,7 @@ public class TasksHandler implements HttpHandler {
     }
 
     private void updateEpic(HttpExchange exchange) throws IOException {
-        String body = new String(exchange.getRequestBody().readAllBytes());
+        String body = readText(exchange);
         Epic epic = gson.fromJson(body, Epic.class);
 
         manager.updateEpic(epic);
@@ -249,7 +248,7 @@ public class TasksHandler implements HttpHandler {
     }
 
     private void updateSubtask(HttpExchange exchange) throws IOException {
-        String body = new String(exchange.getRequestBody().readAllBytes());
+        String body = readText(exchange);
         Subtask subtask = gson.fromJson(body, Subtask.class);
 
         manager.updateSubtask(subtask);
@@ -297,6 +296,10 @@ public class TasksHandler implements HttpHandler {
         String[] idParameter = queryParameters[0].split("=");
 
         return Long.parseLong(idParameter[1]);
+    }
+
+    private String readText(HttpExchange exchange) throws IOException {
+        return new String(exchange.getRequestBody().readAllBytes());
     }
 
     private void writeResponse(HttpExchange exchange, String responseString, int responseCode) throws IOException {
