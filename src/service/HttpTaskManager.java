@@ -63,6 +63,7 @@ public class HttpTaskManager extends FileBackedTasksManager{
                     break;
                 case 3:
                     addHistory(manager, data);
+                    break;
                 case 4:
                     addPrioritized(manager, jsonArray);
             }
