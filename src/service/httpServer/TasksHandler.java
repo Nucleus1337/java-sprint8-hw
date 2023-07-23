@@ -161,26 +161,31 @@ public class TasksHandler implements HttpHandler {
     private void getAllTasks(HttpExchange exchange) throws IOException {
         String responseString = gson.toJson(manager.getAllTasks());
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили все задачи");
     }
 
     private void getAllEpicss(HttpExchange exchange) throws IOException {
         String responseString = gson.toJson(manager.getAllEpics());
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили все эпики");
     }
 
     private void getAllSubtasks(HttpExchange exchange) throws IOException {
         String responseString = gson.toJson(manager.getAllSubtasks());
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили все подзадачи");
     }
 
     private void getPriorTasks(HttpExchange exchange) throws IOException {
         String responseString = gson.toJson(manager.getPrioritizedTasks());
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили список задач по приоритету");
     }
 
     private void getHistory(HttpExchange exchange) throws IOException {
         String responseString = gson.toJson(manager.getHistory());
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили историю");
     }
 
     private void createTask(HttpExchange exchange) throws IOException {
@@ -189,6 +194,7 @@ public class TasksHandler implements HttpHandler {
 
         manager.createTask(task);
         writeResponse(exchange, "Задача создана успешно", 200);
+        System.out.println("Создали задачу id = " + task.getId());
     }
 
     private void createEpic(HttpExchange exchange) throws IOException {
@@ -197,6 +203,7 @@ public class TasksHandler implements HttpHandler {
 
         manager.createEpic(epic);
         writeResponse(exchange, "Эпик создан успешно", 200);
+        System.out.println("Создали эпик id = " + epic.getId());
     }
 
     private void createSubtask(HttpExchange exchange) throws IOException {
@@ -205,30 +212,35 @@ public class TasksHandler implements HttpHandler {
 
         manager.createSubtask(subtask);
         writeResponse(exchange, "Подзадача создана успешно", 200);
+        System.out.println("Создали подзадачу id = " + subtask.getId());
     }
 
     private void getTaskById(HttpExchange exchange) throws IOException {
         long id = getIdFromURI(exchange);
         String responseString = gson.toJson(manager.getTaskById(id));
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили задачу с id = " + id);
     }
 
     private void getEpicById(HttpExchange exchange) throws IOException {
         long id = getIdFromURI(exchange);
         String responseString = gson.toJson(manager.getEpicById(id));
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили эпик с id = " + id);
     }
 
     private void getSubtaskById(HttpExchange exchange) throws IOException {
         long id = getIdFromURI(exchange);
         String responseString = gson.toJson(manager.getSubtaskById(id));
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили подзадачу с id = " + id);
     }
 
     private void getAllSubtasksByEpicId(HttpExchange exchange) throws IOException {
         long id = getIdFromURI(exchange);
         String responseString = gson.toJson(manager.getAllSubtasksByEpicId(id));
         writeResponse(exchange, responseString, 200);
+        System.out.println("Получили все подзадачи для эпика с id = " + id);
     }
 
     private void updateTask(HttpExchange exchange) throws IOException {
@@ -237,6 +249,7 @@ public class TasksHandler implements HttpHandler {
 
         manager.updateTask(task);
         writeResponse(exchange, "Задача успешно обновленна", 200);
+        System.out.println("Обновили задачу с id = " + task.getId());
     }
 
     private void updateEpic(HttpExchange exchange) throws IOException {
@@ -245,6 +258,7 @@ public class TasksHandler implements HttpHandler {
 
         manager.updateEpic(epic);
         writeResponse(exchange, "Задача успешно обновленна", 200);
+        System.out.println("Обновили эпис с id = " + epic.getId());
     }
 
     private void updateSubtask(HttpExchange exchange) throws IOException {
@@ -253,21 +267,25 @@ public class TasksHandler implements HttpHandler {
 
         manager.updateSubtask(subtask);
         writeResponse(exchange, "Задача успешно обновленна", 200);
+        System.out.println("Обновили подзадачу с id = " + subtask.getId());
     }
 
     private void deleteAllTasks(HttpExchange exchange) throws IOException {
         manager.clearAllTasks();
         writeResponse(exchange, "Все задачи удалены успешно", 200);
+        System.out.println("Удалили все задачи");
     }
 
     private void deleteAllEpics(HttpExchange exchange) throws IOException {
         manager.clearAllEpics();
         writeResponse(exchange, "Все эпики удалены успешно", 200);
+        System.out.println("Удалили все эпики (подзадачи включительно)");
     }
 
     private void deleteAllSubtasks(HttpExchange exchange) throws IOException {
         manager.clearAllSubtasks();
         writeResponse(exchange, "Все подзадачи удалены успешно", 200);
+        System.out.println("Удалили все подзадачи");
     }
 
     private void deleteTaskById(HttpExchange exchange) throws IOException {
@@ -275,6 +293,7 @@ public class TasksHandler implements HttpHandler {
         manager.removeTaskById(id);
 
         writeResponse(exchange, "Задача с id " + id + " удалена успешно", 200);
+        System.out.println("Удалили задачу с id = " + id);
     }
 
     private void deleteEpicById(HttpExchange exchange) throws IOException {
@@ -282,6 +301,7 @@ public class TasksHandler implements HttpHandler {
         manager.removeEpicById(id);
 
         writeResponse(exchange, "Эпик с id " + id + " удален успешно", 200);
+        System.out.println("Удалили эпик (с подзадачами) с id = " + id);
     }
 
     private void deleteSubtaskById(HttpExchange exchange) throws IOException {
@@ -289,6 +309,7 @@ public class TasksHandler implements HttpHandler {
         manager.removeSubtaskById(id);
 
         writeResponse(exchange, "Подзадача с id " + id + " удалена успешно", 200);
+        System.out.println("Удалили подзадачу с id = " + id);
     }
 
     private long getIdFromURI(HttpExchange exchange) {
